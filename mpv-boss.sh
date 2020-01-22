@@ -38,7 +38,6 @@ if [ "$1" = "hide" ]; then
     xdotool key --window $WID ctrl+p
   done
 elif [ "$1" = "show" ]; then
-  INITIAL_WID=$(xdotool getactivewindow)
   for WID in $(xdotool search --name '.* - mpv$'); do
     xdotool key --window $WID alt+p
     xdotool windowactivate $WID
