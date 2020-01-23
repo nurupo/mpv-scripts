@@ -25,7 +25,7 @@
 -- Useful when you have paused a YouTube video long enough for youtube-dl not
 -- being able to resume it (YouTube expires the video stream URLs?).
 
-function reload_current_path()
+local function reload_current_path()
     mp.commandv('loadfile', mp.get_property('path'))
 end
 

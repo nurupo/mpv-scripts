@@ -22,7 +22,7 @@
 
 -- Displays the media title when playing a new file.
 
-function show_filename()
+local function show_filename()
     mp.osd_message(mp.get_property_osd('media-title'), 5)
 end
 

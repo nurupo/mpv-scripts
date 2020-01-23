@@ -30,7 +30,7 @@
 -- for a main window, e.g. a code editor, and 1/3 for a video on a side. 1/6 is
 -- just for the completeness, to match 1/4.
 
-function step_window_scale(increment)
+local function step_window_scale(increment)
     local scales = {
         1.0/6, 1.0/4, 1.0/3, 1.0/2, 1/1.5, 1.0/1
     }

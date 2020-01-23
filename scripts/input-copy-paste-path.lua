@@ -30,7 +30,7 @@
 -- Hardcoded to recognize http(s) and file://. Anything that is not http(s) or
 -- file:// is treated as a local file path.
 
-function copy_path()
+local function copy_path()
     local path = mp.get_property('path')
     if os.execute('echo -n "' .. path .. '" | xclip -selection clipboard') then
         mp.osd_message('Copied: ' .. path, 3)
@@ -41,7 +41,17 @@ function copy_path()
     end
 end
 
-function paste_path()
+local function file_exists(name)
+   local f = io.open(name, "r")
+   if f then
+       f:close()
+       return true
+   else
+       return false
+   end
+end
+
+local function paste_path()
     local p = io.popen('xclip -selection clipboard -o', 'r')
     -- remove "file://" if present
     local path = p:read()
@@ -62,16 +72,6 @@ function paste_path()
         mp.osd_message('Error: Failed to paste! Do you have xclip installed?', 10)
         mp.msg.error('Failed to paste! Do you have xclip installed?')
     end
-end
-
-function file_exists(name)
-   local f = io.open(name, "r")
-   if f then
-       f:close()
-       return true
-   else
-       return false
-   end
 end
 
 mp.add_key_binding(nil, 'copy-paste-path-copy',  copy_path)

@@ -19,7 +19,7 @@
 --
 -- mpv specific: capped at 100, since that's the max speed in mpv.
 
-function step_sepeed(increment)
+local function step_sepeed(increment)
     -- https://github.com/videolan/vlc/blob/65683cd771684e85c181172cb0b2cb972f3553b5/src/player/player.c#L1280
     local rates = {
         1.0/64, 1.0/32, 1.0/16, 1.0/8, 1.0/4, 1.0/3, 1.0/2, 2.0/3,

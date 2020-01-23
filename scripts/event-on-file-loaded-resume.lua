@@ -22,7 +22,7 @@
 
 -- Starts playing newly opened files.
 
-function resume()
+local function resume()
     mp.set_property_bool('pause', false)
 end
 
