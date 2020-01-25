@@ -22,26 +22,29 @@
 
 -- Resizes the window in specific steps.
 --
--- 1, 1/2 and 1/4 are obvious.
--- 1/1.5, 1/3 and 1/6, assuming the input is on 1920x1080, will resize it to
--- 1, 1/2 and 1/3 of 1280x720. The reason for this is that if I don't want to
--- watch a 1920x1080 video in full screen, 1/2 of it is too small, but 1/1.5,
--- i.e. 1280x720 - just perfect. 1/3 is useful when splitting the screen on 2/3
--- for a main window, e.g. a code editor, and 1/3 for a video on a side. 1/6 is
--- just for the completeness, to match 1/4.
+-- Set `screen_height` to your screen's max height.
+--
+-- Resizes the window to 1/1, 1/1.5, 1/2, etc. of your screen, allowing to
+-- stack windows side by side, as they would be resized to the same resolution
+-- even if they are of different original resolution. Well, assuming the videos
+-- have the same aspect ratio, otherwise only their height would be the same
+-- and not the width.
+
+local screen_height = 1080
+local scales = {
+    1/6, 1/5, 1/4, 1/3, 1/2, 1/1.5, 1/1
+}
 
 local function step_window_scale(increment)
-    local scales = {
-        1.0/6, 1.0/4, 1.0/3, 1.0/2, 1/1.5, 1.0/1
-    }
-    local scale = mp.get_property_number("window-scale") * (increment and 1.1 or 0.9)
+    local scale = mp.get_property_number("window-scale")
+    local video_height = mp.get_property("height")
+    local output_height = scale * video_height
     for i=1, #scales do
-        if (increment and scales[i] > scale) or ((not increment and scales[i] >= scale) and (i > 1)) then
-            scale = increment and scales[i] or scales[i-1]
+        if (increment and scales[i]*screen_height > output_height) or ((not increment and scales[i]*screen_height >= output_height) and (i > 1)) then
+            scale = screen_height/video_height * (increment and scales[i] or scales[i-1])
             break
         end
     end
-    if scale > 1.0 then scale = 1.0 end
     mp.command("set window-scale " .. scale)
 end
 
