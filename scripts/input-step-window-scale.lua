@@ -34,13 +34,15 @@ local screen_height = 1080
 local scales = {
     1/6, 1/5, 1/4, 1/3, 1/2, 1/1.5, 1/1
 }
+-- window-scale can't store 1/3 and such, introducing error
+local scale_error_correction = (scales[2]-scales[1])*screen_height/2
 
 local function step_window_scale(increment)
     local scale = mp.get_property_number("window-scale")
     local video_height = mp.get_property("height")
     local output_height = scale * video_height
     for i=1, #scales do
-        if (increment and scales[i]*screen_height > output_height) or ((not increment and scales[i]*screen_height >= output_height) and (i > 1)) then
+        if (increment and scales[i]*screen_height > output_height+scale_error_correction) or ((not increment and scales[i]*screen_height >= output_height-scale_error_correction) and (i > 1)) then
             scale = screen_height/video_height * (increment and scales[i] or scales[i-1])
             break
         end
