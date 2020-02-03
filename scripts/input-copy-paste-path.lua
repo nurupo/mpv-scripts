@@ -23,22 +23,15 @@
 -- Allows copying and pasting of the currently playing file path.
 --
 -- Useful when you want to share a YouTube URL of a video you are watching, or
--- you want to open an URL you have copied.
---
--- Linux-only. Requires xclip to be installed.
+-- you want to open an URL in mpv that you have copied from somewhere else.
 --
 -- Hardcoded to recognize http(s) and file://. Anything that is not http(s) or
 -- file:// is treated as a local file path.
 
+local cp = require('lib-copy-paste')
+
 local function copy_path()
-    local path = mp.get_property('path')
-    if os.execute('echo -n "' .. path .. '" | xclip -selection clipboard') then
-        mp.osd_message('Copied: ' .. path, 3)
-        mp.msg.info('Copied: ' .. path)
-    else
-        mp.osd_message('Error: Failed to copy! Do you have xclip installed?', 10)
-        mp.msg.error('Failed to copy! Do you have xclip installed?')
-    end
+    cp.copy(mp.get_property('path'), true)
 end
 
 local function file_exists(name)
@@ -52,9 +45,8 @@ local function file_exists(name)
 end
 
 local function paste_path()
-    local p = io.popen('xclip -selection clipboard -o', 'r')
-    -- remove "file://" if present
-    local path = p:read()
+    local path = cp.paste(true)
+    if not path then return end
     if path:find('^file://') then
         path = path:sub(8)
     end
@@ -64,14 +56,7 @@ local function paste_path()
         mp.msg.error('File "' .. path .. '" doesn\'t exist!')
         return
     end
-    if p:close() then
-        mp.osd_message('Pasted: ' .. path, 3)
-        mp.msg.info('Pasted: ' .. path)
-        mp.commandv('loadfile', path)
-    else
-        mp.osd_message('Error: Failed to paste! Do you have xclip installed?', 10)
-        mp.msg.error('Failed to paste! Do you have xclip installed?')
-    end
+    mp.commandv('loadfile', path)
 end
 
 mp.add_key_binding(nil, 'copy-paste-path-copy',  copy_path)
