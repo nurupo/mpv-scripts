@@ -29,13 +29,25 @@
 local cp = require('lib-copy-paste')
 local wv = require('lib-web-video')
 
+-- Switch between seconds only and hours, minutes and seconds
+local seconds_only = true
+
 local function get_current_timestamp()
-    local pos = mp.get_property_osd('time-pos')
-    if not pos then
-        mp.msg.error("Couldn't get video position")
-        return nil
+    if seconds_only then
+        local pos = mp.get_property('time-pos')
+        if not pos then
+            mp.msg.error("Couldn't get video position")
+            return nil
+        end
+        return math.floor(pos) .. (wv.is_youtube() and '' or 's')
+    else
+        local pos = mp.get_property_osd('time-pos')
+        if not pos then
+            mp.msg.error("Couldn't get video position")
+            return nil
+        end
+        return pos:sub(1, 2) .. 'h' .. pos:sub(4, 5) .. 'm' .. pos:sub(7, 8) .. 's'
     end
-    return pos:sub(1, 2) .. 'h' .. pos:sub(4, 5) .. 'm' .. pos:sub(7, 8) .. 's'
 end
 
 local function youtube_get_current_timestamp_url()
