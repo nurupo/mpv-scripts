@@ -22,6 +22,7 @@
 
 -- Copies media title.
 
+package.path = os.getenv('HOME') .. '/.config/mpv/scripts/?.lua;' .. package.path
 local cp = require('lib-copy-paste')
 
 local function copy_media_title()

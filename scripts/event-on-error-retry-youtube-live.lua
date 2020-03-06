@@ -25,6 +25,7 @@
 -- Probably Linux-only
 -- Requires curl to be installed
 
+package.path = os.getenv('HOME') .. '/.config/mpv/scripts/?.lua;' .. package.path
 local wv = require('lib-web-video')
 
 local youtube_id

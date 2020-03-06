@@ -28,6 +28,7 @@
 -- Hardcoded to recognize http(s) and file://. Anything that is not http(s) or
 -- file:// is treated as a local file path.
 
+package.path = os.getenv('HOME') .. '/.config/mpv/scripts/?.lua;' .. package.path
 local cp = require('lib-copy-paste')
 
 local function copy_path()

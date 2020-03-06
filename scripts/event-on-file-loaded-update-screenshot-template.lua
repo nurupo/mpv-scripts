@@ -30,6 +30,7 @@
 -- Only YouTube and Twitch videos are affected, sceenshots for evrythng else
 -- will use the same format as before.
 
+package.path = os.getenv('HOME') .. '/.config/mpv/scripts/?.lua;' .. package.path
 local wv = require('lib-web-video')
 
 local function get_url_screenshot_template()

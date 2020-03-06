@@ -26,6 +26,7 @@
 --
 -- Works only for archive/VODs, doesn't work for live streams.
 
+package.path = os.getenv('HOME') .. '/.config/mpv/scripts/?.lua;' .. package.path
 local cp = require('lib-copy-paste')
 local wv = require('lib-web-video')
 
