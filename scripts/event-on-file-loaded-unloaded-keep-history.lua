@@ -32,7 +32,7 @@ end
 
 local function log(event)
   local f = io.open(os.getenv('HOME') .. '/.config/mpv/history.log', 'a+')
-  f:write(('[%s] %s %s %s\n'):format(os.date('%Y-%m-%d %H:%M:%S'), pad(event, 12), pad(path, 48), title))
+  f:write(('[%s] %s %s %s\n'):format(os.date('%Y-%m-%d %H:%M:%S'), pad(event, 12), pad(path, 56), title))
   f:close()
 end
 

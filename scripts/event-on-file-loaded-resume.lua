@@ -21,9 +21,20 @@
 -- THE SOFTWARE.
 
 -- Starts playing newly opened files.
+--
+-- You can force it to start paused the first time by passing
+-- --script-opts=event-on-file-loaded-resume-startPaused=yes option to mpv.
+
+require 'mp.options'
+
+local options = {
+    startPaused = false,
+}
+read_options(options, 'event-on-file-loaded-resume')
 
 local function resume()
-    mp.set_property_bool('pause', false)
+    mp.set_property_bool('pause', options.startPaused)
+    options.startPaused = false
 end
 
 mp.register_event('file-loaded', resume)
