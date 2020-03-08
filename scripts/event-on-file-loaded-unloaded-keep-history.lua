@@ -24,6 +24,7 @@
 
 local path
 local title
+local loaded = false
 
 local function pad(str, len, char)
   if char == nil then char = ' ' end
@@ -39,10 +40,13 @@ end
 local function log_file_loaded(event)
   path = mp.get_property('path')
   title = mp.get_property_osd('media-title')
+  loaded = true
   log('loaded')
 end
 
 local function log_end_file(event)
+  if not loaded then return end
+  loaded = false
   log('unloaded')
 end  
 
