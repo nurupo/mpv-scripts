@@ -38,16 +38,23 @@ local scales = {
 local scale_error_correction = (scales[2]-scales[1])*screen_height/2
 
 local function step_window_scale(increment)
-    local scale = mp.get_property_number("window-scale")
+    local current_scale = mp.get_property_number("current-window-scale")
     local video_height = mp.get_property("height")
-    local output_height = scale * video_height
+    local output_height = current_scale * video_height
     for i=1, #scales do
         if (increment and scales[i]*screen_height > output_height+scale_error_correction) or ((not increment and scales[i]*screen_height >= output_height-scale_error_correction) and (i > 1)) then
-            scale = screen_height/video_height * (increment and scales[i] or scales[i-1])
+            new_scale = screen_height/video_height * (increment and scales[i] or scales[i-1])
             break
         end
     end
-    mp.command("set window-scale " .. scale)
+    -- Workaround window-scale having the default value of 1 even though the
+    -- current-window-scale is 0.667. Setting window-scale to 1 - its current
+    -- value - does nothing, so we want to set it to 0.667 first and only then
+    -- set it to the 1 scaling to actually force the 1 scaling.
+    if (math.abs(current_scale*screen_height-new_scale*screen_height) > scale_error_correction) then
+        mp.command("set window-scale " .. current_scale)
+    end
+    mp.command("set window-scale " .. new_scale)
 end
 
 mp.add_key_binding(nil, "step-window-scale-up", function() step_window_scale(true) end)
