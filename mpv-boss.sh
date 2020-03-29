@@ -28,18 +28,22 @@ set -eu
 #
 # Setup with your DE to be triggered on a keyboard shortcut.
 #
-# Assumes you have setup ctrl+p and alt+p hotkeys in mpv for pause and play:
-#   Ctrl+p set pause yes
-#   Alt+p set pause no
+# Assumes you have input-boss-key.lua bound on B.
 
 if [ "$1" = "hide" ]; then
-  for WID in $(xdotool search --onlyvisible --name '.* - mpv$'); do
+  WIDS="$(xdotool search --onlyvisible --name '.* - mpv$')"
+  echo "$WIDS" > /tmp/mpv-boss-wids
+  echo "$WIDS" | while read WID; do
     xdotool windowminimize $WID
-    xdotool key --window $WID ctrl+p
+    xdotool key --window $WID B
   done
 elif [ "$1" = "show" ]; then
-  for WID in $(xdotool search --name '.* - mpv$'); do
-    xdotool key --window $WID alt+p
+  if [ ! -f /tmp/mpv-boss-wids ]; then
+    exit 1
+  fi
+  cat /tmp/mpv-boss-wids | while read WID; do
+    xdotool key --window $WID B
     xdotool windowactivate $WID
   done
+  rm /tmp/mpv-boss-wids
 fi
