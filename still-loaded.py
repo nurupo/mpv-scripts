@@ -56,8 +56,8 @@ with open('history.log', 'r') as f:
       else:
         videos[path] = (video[0]-1, video[1], video[2])
 
-print('{} still loaded videos:'.format(videos_count))
+print('# {} still loaded videos:'.format(videos_count))
 for path, (count, date, title) in videos.items():
   for _ in range(count):
     print('# {} {}'.format(date, title))
-    print('mpv --script-opts=event-on-file-loaded-resume-startPaused=yes {} &'.format(path))
+    print('mpv --script-opts=event-on-file-loaded-resume-startPaused=yes {} & sleep 3'.format(path))
