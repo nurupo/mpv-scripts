@@ -67,9 +67,13 @@ function wv.is_twitch()
     return url:match('https?://.*twitch.tv/.+') ~= nil
 end
 
-function wv.twitch_is_live()
+function wv.is_twitch_live_url()
     local url = mp.get_property('path')
-    return url:match('https?://.*twitch.tv/videos/') == nil and
+    return url:match('https?://.*twitch.tv/videos/') == nil
+end
+
+function wv.twitch_is_live()
+    return wv.is_twitch_live_url and
            mp.get_property('file-format') == 'hls'
 end
 
