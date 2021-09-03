@@ -23,7 +23,9 @@
 -- Removes the audio output (set ao null) after mpv has been paused for some
 -- time, restoring it back on resume.
 --
--- Useful for removing pulseaudio connections for long paused videos.
+-- Useful for removing pulseaudio connections for long paused videos and
+-- avoiding the pulseaudio connection limit error:
+-- Warning! Too many connections (64), dropping incoming connection.
 --
 -- If ao was null to begin with - this script does nothing, as it makes no
 -- sense to go from null to null and then restore back to null.
