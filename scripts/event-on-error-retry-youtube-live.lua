@@ -70,7 +70,9 @@ local function retry_youtube_live(event)
     end
     if youtube_id and youtube_has_live_thumbnail(youtube_id) then
         mp.msg.info("This appears to be an upcoming YouTube live stream. Will keep retying to open it until it goes live.")
-        mp.commandv('loadfile', path)
+        mp.add_timeout(8.5, function()
+            mp.commandv('loadfile', path)
+        end)
     end
 end
 
