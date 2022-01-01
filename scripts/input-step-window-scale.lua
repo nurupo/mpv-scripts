@@ -40,6 +40,9 @@ local scale_error_correction = (scales[2]-scales[1])*screen_height/2
 local function step_window_scale(increment)
     local current_scale = mp.get_property_number("current-window-scale")
     local video_height = mp.get_property("height")
+    if not current_scale or not video_height then
+        return
+    end
     local output_height = current_scale * video_height
     for i=1, #scales do
         if (increment and scales[i]*screen_height > output_height+scale_error_correction) or ((not increment and scales[i]*screen_height >= output_height-scale_error_correction) and (i > 1)) then
