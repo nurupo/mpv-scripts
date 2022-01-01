@@ -22,6 +22,7 @@
 
 -- Keeps trying to open an upcoming Twitch live stream until it starts
 
+-- TODO: look into maybe using mp.get_script_directory() from mpv 33.1 once we update to that
 package.path = os.getenv('HOME') .. '/.config/mpv/scripts/?.lua;' .. package.path
 local wv = require('lib-web-video')
 
@@ -51,6 +52,12 @@ local function restore_idle()
         overrode_idle = false
     end
 end
+
+-- TODO: address this: https://github.com/mpv-player/mpv/blob/master/DOCS/interface-changes.rst
+-->   - Lua end-file events set the "error" field; this is deprecated; use the
+-->     "file_error" instead for this specific event. Scripts relying on the
+-->     "error" field for end-file will silently break at some point in the
+-->     future.
 
 local function retry_twitch_live(event)
     if event.reason ~= "error" then
