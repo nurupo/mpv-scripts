@@ -1,6 +1,6 @@
 -- MIT License
 --
--- Copyright (c) 2020 Maxim Biro <nurupo.contributions@gmail.com>
+-- Copyright (c) 2020-2022 Maxim Biro <nurupo.contributions@gmail.com>
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@
 -- Only YouTube and Twitch videos are affected, sceenshots for evrythng else
 -- will use the same format as before.
 
-package.path = os.getenv('HOME') .. '/.config/mpv/scripts/?.lua;' .. package.path
+package.path = debug.getinfo(1).source:match("@?(.*/)") .. '?.lua;' .. package.path
 local wv = require('lib-web-video')
 
 local function get_url_screenshot_template()

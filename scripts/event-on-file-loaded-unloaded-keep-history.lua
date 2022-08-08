@@ -1,6 +1,6 @@
 -- MIT License
 --
--- Copyright (c) 2020 Maxim Biro <nurupo.contributions@gmail.com>
+-- Copyright (c) 2020-2022 Maxim Biro <nurupo.contributions@gmail.com>
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ local function pad(str, len, char)
 end
 
 local function log(event)
-  local f = io.open(os.getenv('HOME') .. '/.config/mpv/history.log', 'a+')
+  local f = io.open(debug.getinfo(1).source:match("@?(.*/)") .. '../history.log', 'a+')
   f:write(('[%s] %s %s %s\n'):format(os.date('%Y-%m-%d %H:%M:%S'), pad(event, 12), pad(path, 56), title))
   f:close()
 end

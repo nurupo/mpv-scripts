@@ -1,6 +1,6 @@
 -- MIT License
 --
--- Copyright (c) 2020 Maxim Biro <nurupo.contributions@gmail.com>
+-- Copyright (c) 2020-2022 Maxim Biro <nurupo.contributions@gmail.com>
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 -- Probably Linux-only
 -- Requires curl to be installed
 
-package.path = os.getenv('HOME') .. '/.config/mpv/scripts/?.lua;' .. package.path
+package.path = debug.getinfo(1).source:match("@?(.*/)") .. '?.lua;' .. package.path
 local wv = require('lib-web-video')
 
 local youtube_id
