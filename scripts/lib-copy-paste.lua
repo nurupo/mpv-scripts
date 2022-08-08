@@ -1,6 +1,6 @@
 -- MIT License
 --
--- Copyright (c) 2020 Maxim Biro <nurupo.contributions@gmail.com>
+-- Copyright (c) 2020-2022 Maxim Biro <nurupo.contributions@gmail.com>
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -22,12 +22,19 @@
 
 -- Module for copying and pasting.
 --
--- Linux-only. Requires xclip to be installed.
+-- Linux and Windows only. On Linux, requires xclip to be installed. On Windows, requires Windows 10 (no idea if it works on earlier Windowses).
 
 local cp = {}
 
+local copy_cmd = package.config:sub(1,1) == '\\' and         'powershell -window hidden -command "Get-Clipboard"' or -- Windows
+                 os.execute('xclip -h > /dev/null 2>&1') and 'xclip -selection clipboard -o'                         -- Linux
+
+local paste_fn = function (str) return  package.config:sub(1,1) == '\\' and         os.execute('powershell -window hidden -command "Write-Host -NoNewLine ""' .. str .. '""" | clip.exe') or -- Windows
+                                        os.execute('xclip -h > /dev/null 2>&1') and os.execute('echo -n "' .. str .. '" | xclip -selection clipboard')                                       -- Linux
+                 end
+
 function cp.copy(str, verbose)
-    if not os.execute('echo -n "' .. str .. '" | xclip -selection clipboard') then
+    if not paste_fn(str) then
         mp.osd_message('Error: Failed to copy! Do you have xclip installed?', 10)
         mp.msg.error('Failed to copy! Do you have xclip installed?')
         return false
@@ -40,7 +47,7 @@ function cp.copy(str, verbose)
 end
 
 function cp.paste(verbose)
-    local p = io.popen('xclip -selection clipboard -o', 'r')
+    local p = io.popen(copy_cmd, 'r')
     -- remove "file://" if present
     local str = p:read()
     if not p:close() then

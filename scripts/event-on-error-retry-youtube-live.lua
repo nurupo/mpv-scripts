@@ -22,8 +22,7 @@
 
 -- Keeps trying to open an upcoming YouTube live stream until it starts
 --
--- Probably Linux-only
--- Requires curl to be installed
+-- Requires curl to be installed (surprisingly, at some point Windows 10 started including curl)
 
 package.path = debug.getinfo(1).source:match("@?(.*/)") .. '?.lua;' .. package.path
 local wv = require('lib-web-video')
