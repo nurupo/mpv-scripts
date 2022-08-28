@@ -30,6 +30,7 @@
 -- have the same aspect ratio, otherwise only their height would be the same
 -- and not the width.
 
+-- TODO: use display-height added in 0.34.0
 local screen_height = 1080
 local scales = {
     1/6, 1/5, 1/4, 1/3, 1/2, 1/1.5, 1/1
