@@ -1,6 +1,6 @@
 -- MIT License
 --
--- Copyright (c) 2020-2022 Maxim Biro <nurupo.contributions@gmail.com>
+-- Copyright (c) 2020-2023 Maxim Biro <nurupo.contributions@gmail.com>
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,11 @@ local paste_fn = function (str) return  package.config:sub(1,1) == '\\' and     
                  end
 
 function cp.copy(str, verbose)
+    if not str then
+        mp.osd_message('Error: Failed to copy - nothing to copy!', 10)
+        mp.msg.error('Failed to copy - nothing to copy!')
+        return false
+    end
     if not paste_fn(str) then
         mp.osd_message('Error: Failed to copy! Do you have xclip installed?', 10)
         mp.msg.error('Failed to copy! Do you have xclip installed?')
