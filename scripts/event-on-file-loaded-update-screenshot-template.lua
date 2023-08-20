@@ -1,6 +1,6 @@
 -- MIT License
 --
--- Copyright (c) 2020-2022 Maxim Biro <nurupo.contributions@gmail.com>
+-- Copyright (c) 2020-2023 Maxim Biro <nurupo.contributions@gmail.com>
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -27,29 +27,65 @@
 -- screenshot template for live streams to '%F.%n' instead, as youtube-dl can't
 -- tell us the current video position in a live stream.
 --
--- Only YouTube and Twitch videos are affected, sceenshots for evrythng else
+-- Only YouTube and Twitch videos are affected, sceenshots for everything else
 -- will use the same format as before.
+--
+-- Illegal characters in filenames are replaced with the underscore '_'.
 
 package.path = debug.getinfo(1).source:match("@?(.*/)") .. '?.lua;' .. package.path
 local wv = require('lib-web-video')
 
-local function get_url_screenshot_template()
-    if wv.is_youtube() then
-        if wv.youtube_is_live() then
-            return '%F.%n'
-        end
-        local clean_url = wv.youtube_get_clean_url()
-        if not clean_url then return nil end
-        return clean_url:sub(clean_url:find("/[^/]*$") + 1) .. '&t=' .. '%wHh%wMm%wSs'
-    elseif wv.is_twitch() then
-        if wv.twitch_is_live() then
-            return '%F.%n'
-        end
-        local clean_url = wv.twitch_get_clean_url()
-        if not clean_url then return nil end
-        return clean_url:sub(clean_url:find("/[^/]*$") + 1) .. '?t=' .. '%wHh%wMm%wSs'
+local function sanitize_filename(filename)
+    -- some symbols and sequences of characters have special meaning when used
+    -- as a pattern and as such patterns must be escaped if we want them to be
+    -- treated literally
+    local function escape_pattern(text)
+        return text:gsub("%W", "%%%1")
     end
-    return nil
+
+    local function sanitize(filename, disallowed_characters)
+        local disallowed_characters_pattern = '[' .. escape_pattern(disallowed_characters) .. ']'
+        return filename:gsub(disallowed_characters_pattern, "_")
+    end
+
+    if package.config:sub(1,1) == '\\' then -- Windows
+        -- https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
+        return sanitize(filename, '<>:"/\\|?*')
+    else -- *nix
+        -- macOS used to disallow the colon ':', but sounds like it's allowed now
+        return sanitize(filename, '/')
+    end
+end
+
+local function get_url_screenshot_template()
+    local function get_url_screenshot_template_()
+        if wv.is_youtube() then
+            if wv.youtube_is_live() then
+                return '%F.%n'
+            end
+            local clean_url = wv.youtube_get_clean_url()
+            if not clean_url then
+                return nil
+            end
+            return clean_url:sub(clean_url:find("/[^/]*$") + 1) .. '&t=' .. '%wHh%wMm%wSs'
+        elseif wv.is_twitch() then
+            if wv.twitch_is_live() then
+                return '%F.%n'
+            end
+            local clean_url = wv.twitch_get_clean_url()
+            if not clean_url then
+                return nil
+            end
+            return clean_url:sub(clean_url:find("/[^/]*$") + 1) .. '&t=' .. '%wHh%wMm%wSs'
+        end
+        return nil
+    end
+
+    local template = get_url_screenshot_template_()
+    if not template then
+        return nil
+    end
+    return sanitize_filename(template)
 end
 
 local original_screenshot_template = mp.get_property('screenshot-template')
