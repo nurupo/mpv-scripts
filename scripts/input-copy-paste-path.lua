@@ -1,6 +1,6 @@
 -- MIT License
 --
--- Copyright (c) 2020-2022 Maxim Biro <nurupo.contributions@gmail.com>
+-- Copyright (c) 2020-2024 Maxim Biro <nurupo.contributions@gmail.com>
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -52,7 +52,7 @@ local function paste_path()
         path = path:sub(8)
     end
     -- make sure the file exists or it's an http(s) URL, as mpv terminates on things it can't open
-    if not file_exists(path) and not path:find('^http?') then
+    if not file_exists(path) and not path:find('^https?://') then
         mp.osd_message('Error: File "' .. path .. '" doesn\'t exist!', 10)
         mp.msg.error('File "' .. path .. '" doesn\'t exist!')
         return

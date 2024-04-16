@@ -1,6 +1,6 @@
 -- MIT License
 --
--- Copyright (c) 2020-2023 Maxim Biro <nurupo.contributions@gmail.com>
+-- Copyright (c) 2020-2024 Maxim Biro <nurupo.contributions@gmail.com>
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -93,7 +93,7 @@ local original_screenshot_template = mp.get_property('screenshot-template')
 local function update_screenshot_template()
     mp.set_property('screenshot-template', original_screenshot_template)
     local path = mp.get_property('path')
-    if path:find('^http?') then
+    if path:find('^https?://') then
         local screenshot_template = get_url_screenshot_template()
         if screenshot_template then
             mp.set_property('screenshot-template', screenshot_template)
