@@ -1,6 +1,6 @@
 -- MIT License
 --
--- Copyright (c) 2020-2023 Maxim Biro <nurupo.contributions@gmail.com>
+-- Copyright (c) 2020-2024 Maxim Biro <nurupo.contributions@gmail.com>
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +26,12 @@
 
 local cp = {}
 
-local copy_cmd = package.config:sub(1,1) == '\\' and         'powershell -window hidden -command "Get-Clipboard"' or -- Windows
-                 os.execute('xclip -h > /dev/null 2>&1') and 'xclip -selection clipboard -o'                         -- Linux
+local powershell_utf8 = 'powershell -window hidden -command "$OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding; '
 
-local paste_fn = function (str) return  package.config:sub(1,1) == '\\' and         os.execute('powershell -window hidden -command "Write-Host -NoNewLine ""' .. str .. '""" | clip.exe') or -- Windows
-                                        os.execute('xclip -h > /dev/null 2>&1') and os.execute('echo -n "' .. str .. '" | xclip -selection clipboard')                                       -- Linux
+local copy_cmd = package.config:sub(1,1) == '\\' and         powershell_utf8 .. 'Get-Clipboard"' or -- Windows
+                 os.execute('xclip -h > /dev/null 2>&1') and 'xclip -selection clipboard -o'        -- Linux
+local paste_fn = function (str) return  package.config:sub(1,1) == '\\' and         os.execute(powershell_utf8 .. 'Write-Host -NoNewLine ""' .. str .. '""" | clip.exe') or -- Windows
+                                        os.execute('xclip -h > /dev/null 2>&1') and os.execute('echo -n "' .. str .. '" | xclip -selection clipboard')                      -- Linux
                  end
 
 function cp.copy(str, verbose)
