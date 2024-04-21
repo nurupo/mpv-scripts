@@ -1,6 +1,6 @@
 -- MIT License
 --
--- Copyright (c) 2020 Maxim Biro <nurupo.contributions@gmail.com>
+-- Copyright (c) 2020-2024 Maxim Biro <nurupo.contributions@gmail.com>
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 -- THE SOFTWARE.
 
--- Starts playing newly opened files.
+-- Always play newly opened files.
 --
 -- You can force it to start paused the first time by passing
 -- --script-opts=event-on-file-loaded-resume-startPaused=yes option to mpv.
@@ -29,10 +29,16 @@ require 'mp.options'
 
 local options = {
     startPaused = false,
+    disable = false,
 }
-read_options(options, 'event-on-file-loaded-resume')
+read_options(options)
 
 local function resume()
+    -- this opion might get set at the run-time
+    options.disable = mp.get_opt(mp.get_script_name():gsub("_", "-") .. '-disable')
+    if options.disable == 'yes' then
+        return
+    end
     mp.set_property_bool('pause', options.startPaused)
     options.startPaused = false
 end
