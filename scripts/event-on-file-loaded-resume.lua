@@ -23,24 +23,24 @@
 -- Always play newly opened files.
 --
 -- You can force it to start paused the first time by passing
--- --script-opts=event-on-file-loaded-resume-startPaused=yes option to mpv.
+-- --script-opts=event_on_file_loaded_resume-start_paused=yes option to mpv.
 
-require 'mp.options'
+local options = require 'mp.options'
 
-local options = {
-    startPaused = false,
+local o = {
+    start_paused = false,
     disable = false,
 }
-read_options(options)
+options.read_options(o)
 
 local function resume()
     -- this opion might get set at the run-time
-    options.disable = mp.get_opt(mp.get_script_name():gsub("_", "-") .. '-disable')
-    if options.disable == 'yes' then
+    o.disable = mp.get_opt(mp.get_script_name() .. '-disable')
+    if o.disable == 'yes' then
         return
     end
-    mp.set_property_bool('pause', options.startPaused)
-    options.startPaused = false
+    mp.set_property_bool('pause', o.start_paused)
+    o.start_paused = false
 end
 
 mp.register_event('file-loaded', resume)
