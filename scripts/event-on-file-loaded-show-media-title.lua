@@ -1,6 +1,6 @@
 -- MIT License
 --
--- Copyright (c) 2020 Maxim Biro <nurupo.contributions@gmail.com>
+-- Copyright (c) 2020-2024 Maxim Biro <nurupo.contributions@gmail.com>
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,19 @@
 
 -- Displays the media title when playing a new file.
 
+local options = require 'mp.options'
+
+local o = {
+    disable = false,
+}
+options.read_options(o)
+
 local function show_filename()
+    -- this opion might get set at the run-time
+    o.disable = mp.get_opt(mp.get_script_name() .. '-disable')
+    if o.disable == 'yes' then
+        return
+    end
     mp.osd_message(mp.get_property_osd('media-title'), 5)
 end
 
