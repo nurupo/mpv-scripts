@@ -79,14 +79,14 @@ local function parse_file_list(option)
     return file_list
 end
 
-local function log_error(msg, delay)
-    mp.osd_message('Error: ' .. msg, delay)
-    msg.error(msg:gsub('\n', ' '))
+local function log_error(str, delay)
+    mp.osd_message('Error: ' .. str, delay)
+    msg.error(str:gsub('\n', ' '))
 end
 
-local function log_info(msg, delay)
-    mp.osd_message(msg, delay)
-    msg.info(msg:gsub('\n', ' '))
+local function log_info(str, delay)
+    mp.osd_message(str, delay)
+    msg.info(str:gsub('\n', ' '))
 end
 
 local function delete_file()
@@ -100,7 +100,7 @@ local function delete_file()
         return
     end
     if o.base_path == nil or o.base_path == '' then
-        msg.error('Can\'t delete without the base_path set', 5)
+        msg.error('Can\'t delete without the base_path set')
         return
     end
     local is_in_base_path = false
