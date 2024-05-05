@@ -31,7 +31,7 @@ local powershell_utf8 = 'powershell -window hidden -command "$OutputEncoding = [
 local copy_cmd = package.config:sub(1,1) == '\\' and         powershell_utf8 .. 'Get-Clipboard"' or -- Windows
                  os.execute('xclip -h > /dev/null 2>&1') and 'xclip -selection clipboard -o'        -- Linux
 local paste_fn = function (str) return  package.config:sub(1,1) == '\\' and         os.execute(powershell_utf8 .. 'Write-Host -NoNewLine ""' .. str .. '""" | clip.exe') or -- Windows
-                                        os.execute('xclip -h > /dev/null 2>&1') and os.execute('echo -n "' .. str .. '" | xclip -selection clipboard')                      -- Linux
+                                        os.execute('xclip -h > /dev/null 2>&1') and os.execute("echo -n '" .. str:gsub("'", "'\\''") .. "' | xclip -selection clipboard")   -- Linux
                  end
 
 function cp.copy(str, verbose)
