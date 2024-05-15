@@ -183,7 +183,7 @@ local function download_video_async(url, is_live, callback)
     end)
 end
 
-local function on_file_loaded()
+local function on_start_file()
     if download_async_command then
         mp.abort_async_command(download_async_command)
         download_async_command = nil
@@ -221,4 +221,4 @@ local function on_file_loaded()
     end)
 end
 
-mp.register_event("file-loaded", on_file_loaded)
+mp.register_event("start-file", on_start_file)
