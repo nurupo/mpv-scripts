@@ -1,6 +1,6 @@
 -- MIT License
 --
--- Copyright (c) 2020-2022 Maxim Biro <nurupo.contributions@gmail.com>
+-- Copyright (c) 2020-2024 Maxim Biro <nurupo.contributions@gmail.com>
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -56,11 +56,28 @@ local function restore_idle()
 end
 
 local function http_code(url)
-    return io.popen('curl -s -o /dev/null -w "%{http_code}" ' .. url, 'r'):read()
+    local null_device = mp.get_property_native("platform") == "windows" and "NUL" or "/dev/null"
+    local result = mp.command_native({
+        name = "subprocess",
+        playback_only = false,
+        args = {"curl", "-s", "-o", null_device, "-w", "%{http_code}", "--", url},
+        capture_stdout = true,
+        capture_stderr = true,
+    })
+    if not result or result.status ~= 0 then
+        mp.msg.warn("Failed to get the HTTP code of " .. url)
+        if result then
+            mp.msg.warn('status: ' .. result.status)
+            mp.msg.warn('stdout: ' .. result.stdout)
+            mp.msg.warn('stderr: ' .. result.stderr)
+        end
+        return nil
+    end
+    return result.stdout
 end
 
 local function youtube_has_live_thumbnail(id)
-    return http_code('https://i.ytimg.com/vi/' .. id .. '/hqdefault_live.jpg') == '200'
+    return http_code('https://i.ytimg.com/vi/' .. id .. '/default_live.jpg') == '200'
 end
 
 local function retry_youtube_live(event)
