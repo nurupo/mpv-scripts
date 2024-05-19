@@ -21,8 +21,7 @@
 -- THE SOFTWARE.
 
 -- Deletes the currently loaded file, as long as it's in one of the the
--- base_path locations, switching to the next item in the playlist (because
--- opened files can't be deleted on Windows).
+-- base_path locations, switching to the next item in the playlist.
 --
 -- Use
 -- --script-opts-add=event_on_end_file_delete-base_path="C:\foo\;D:\bar\" on Windows
@@ -35,7 +34,7 @@
 --
 -- Note that the script simply checks if the file path starts with one of paths
 -- in the base_path, as such it's important to include the trailing \ or / and
--- the file can be anywhere under that bath.
+-- the file can be anywhere under that path.
 
 local msg     = require 'mp.msg'
 local options = require 'mp.options'
@@ -46,7 +45,7 @@ local o = {
 }
 options.read_options(o)
 
-local path = nil
+local absolute_path = nil
 
 local function is_url(str)
     return string.match(str, "^https?://")
@@ -89,15 +88,15 @@ local function log_info(str, delay)
 end
 
 local function delete_file(reason)
-    if not path then
+    if not absolute_path then
         msg.error('No path set')
         return
     end
-    if is_url(path) then
+    if is_url(absolute_path) then
         msg.error('Can\'t delete, the path is an URL')
         return
     end
-    if not file_exists(path) then
+    if not file_exists(absolute_path) then
         msg.error('Can\'t delete, the file does not exist')
         return
     end
@@ -108,7 +107,7 @@ local function delete_file(reason)
     local is_in_base_path = false
     local base_path_list = parse_file_list(o.base_path)
     for _, bp in ipairs(base_path_list) do
-        is_in_base_path = select(1, string.find(path, bp, 1, true)) == 1
+        is_in_base_path = select(1, string.find(absolute_path, bp, 1, true)) == 1
         if is_in_base_path then
             break
         end
@@ -116,15 +115,20 @@ local function delete_file(reason)
     if not is_in_base_path then
         return
     end
-    if os.remove(path) then
-        log_info('Deleted\n' .. path, 5)
+    if os.remove(absolute_path) then
+        log_info('Deleted\n' .. absolute_path, 5)
     else
-        log_error('Failed to delete\n' .. path, 5)
+        log_error('Failed to delete\n' .. absolute_path, 5)
     end
 end
 
 local function record_path()
-    path = mp.get_property("path")
+    local path = mp.get_property("path")
+    if path and path ~= "" then
+        absolute_path = utils.join_path(utils.getcwd(), path)
+    else
+        absolute_path = nil
+    end
 end
 
 mp.register_event('end-file', delete_file)
