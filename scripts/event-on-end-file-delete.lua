@@ -45,7 +45,7 @@ local o = {
 }
 options.read_options(o)
 
-local absolute_path = nil
+local path = nil
 
 local function is_url(str)
     return string.match(str, "^https?://")
@@ -92,12 +92,19 @@ local function delete_file(reason)
         msg.error('No path set')
         return
     end
-    if is_url(absolute_path) then
-        msg.error('Can\'t delete, the path is an URL')
+    if not path then
+        msg.warn('No path set')
         return
     end
+    if is_url(path) then
+        msg.warn('Can\'t delete "' .. path .. '", the path is an URL')
+        return
+    end
+    -- TODO(nurupo): update to use "normalize-path" once mpv v0.39 comes out
+    --               https://mpv.io/manual/master/#command-interface-normalize-path
+    local absolute_path = utils.join_path(utils.getcwd(), path)
     if not file_exists(absolute_path) then
-        msg.error('Can\'t delete, the file does not exist')
+        msg.warn('Can\'t delete "' .. absolute_path .. '", the file does not exist')
         return
     end
     if o.base_path == nil or o.base_path == '' then
@@ -123,12 +130,7 @@ local function delete_file(reason)
 end
 
 local function record_path()
-    local path = mp.get_property("path")
-    if path and path ~= "" then
-        absolute_path = utils.join_path(utils.getcwd(), path)
-    else
-        absolute_path = nil
-    end
+    path = mp.get_property("path")
 end
 
 mp.register_event('end-file', delete_file)
