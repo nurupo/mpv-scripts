@@ -42,6 +42,7 @@ local utils   = require 'mp.utils'
 
 local o = {
     base_path = '',
+    auto_delete = true,
 }
 options.read_options(o)
 
@@ -88,8 +89,7 @@ local function log_info(str, delay)
 end
 
 local function delete_file(reason)
-    if not absolute_path then
-        msg.error('No path set')
+    if not o.auto_delete then
         return
     end
     if not path then
@@ -132,6 +132,13 @@ end
 local function record_path()
     path = mp.get_property("path")
 end
+
+local function toggle_auto_delete()
+    o.auto_delete = not o.auto_delete
+    log_info("Auto delete: " .. (o.auto_delete and "enabled" or "disabled"), 5)
+end
+
+mp.add_key_binding(nil, 'event-on-file-delete_autodelete-toggle',  toggle_auto_delete)
 
 mp.register_event('end-file', delete_file)
 mp.register_event('file-loaded', record_path)
