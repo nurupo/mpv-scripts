@@ -96,12 +96,17 @@ end
 local function load_downloaded_video(downloaded_video_path, is_live, download_start_time_pos)
     local position = mp.get_property_number("time-pos")
     -- the time-pos of a live stream starts counting not from when we opened
-    -- the steam, but from when the steam has started
-    if is_live and download_start_time_pos > 0 and position > download_start_time_pos then
+    -- the steam, but from when the steam has started.
+    -- e.g. the download might have started when the stream was at 01:00:00,
+    -- so our local file's 00:00:00 is actually 01:00:00 of the stream, so we
+    -- need to subtract 01:00:00 from the curent time-pos to correctly
+    -- translate the stream time to the time in the file.
+    if is_live and path and download_start_time_pos and position > download_start_time_pos then
         position = position - download_start_time_pos
     end
-    local commandv_args = {"loadfile", downloaded_video_path, "replace", 0, "start=" .. position ..
-                           ",script-opts-add=[" ..
+    local start = position and ("start=" .. position .. ",") or ""
+    local commandv_args = {"loadfile", downloaded_video_path, "replace", 0, start ..
+                           "script-opts-add=[" ..
                                 "event_on_file_loaded_resume-disable=yes," ..
                                 "event_on_file_loaded_show_media_title-disable=yes" ..
                            "]"
@@ -204,7 +209,7 @@ local function on_start_file()
         load_downloaded_video(json_dump.filename, false, 0)
         return
     end
-    local download_start_time_pos = mp.get_property_number("time-pos")
+    local download_start_time_pos = mp.get_property_number("time-pos") or 0
     local download_start_time = os.time()
     download_async_command = download_video_async(path, json_dump.is_live, function(downloaded_video_path)
         local download_duration_seconds = os.difftime(os.time(), download_start_time)
