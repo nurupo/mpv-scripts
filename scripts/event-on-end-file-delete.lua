@@ -67,7 +67,7 @@ local function parse_file_list(option)
     if not option or option == '' then
         return file_list
     end
-    local separator = ';'
+    local separator = ':'
     if mp.get_property_native("platform") == "windows" then
         separator = ';'
         option = option:gsub('/', '\\')
