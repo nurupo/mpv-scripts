@@ -21,7 +21,7 @@
 -- THE SOFTWARE.
 
 -- Deletes the currently loaded file, as long as it's in one of the the
--- base_path locations, switching to the next item in the playlist.
+-- base_path locations.
 --
 -- Use
 -- --script-opts-add=event_on_end_file_delete-base_path="C:\foo\;D:\bar\" on Windows
@@ -53,13 +53,13 @@ local function is_url(str)
 end
 
 local function file_exists(name)
-   local f = io.open(name, "r")
-   if f then
-       f:close()
-       return true
-   else
-       return false
-   end
+    local f = io.open(name, "r")
+    if f then
+        f:close()
+        return true
+    else
+        return false
+    end
 end
 
 local function parse_file_list(option)

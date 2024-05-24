@@ -21,8 +21,7 @@
 -- THE SOFTWARE.
 
 -- Deletes the currently loaded file, as long as it's in one of the the
--- base_path locations, switching to the next item in the playlist (because
--- opened files can't be deleted on Windows).
+-- base_path locations, switching to the next item in the playlist.
 --
 -- Use
 -- --script-opts-add=input_delete_file-base_path="C:\foo\;D:\bar\" on Windows
@@ -42,8 +41,8 @@ local options = require 'mp.options'
 local utils   = require 'mp.utils'
 
 local o = {
-    require_confirmation = true,
     base_path = '',
+    require_confirmation = true,
 }
 options.read_options(o)
 
@@ -91,22 +90,29 @@ end
 
 local function delete_file()
     local path = mp.get_property("path")
-    if is_url(path) then
-        log_error('Can\'t delete, the path is an URL', 5)
+    if not path then
+        log_error('Can\'t delete, No path set', 5)
         return
     end
-    if not file_exists(path) then
-        log_error('Can\'t delete, the file does not exist', 5)
+    if is_url(path) then
+        log_error('Can\'t delete "' .. path .. '", the path is an URL', 5)
+        return
+    end
+    -- TODO(nurupo): update to use "normalize-path" once mpv v0.39 comes out
+    --               https://mpv.io/manual/master/#command-interface-normalize-path
+    local absolute_path = utils.join_path(utils.getcwd(), path)
+    if not file_exists(absolute_path) then
+        log_error('Can\'t delete "' .. absolute_path .. '", the file does not exist', 5)
         return
     end
     if o.base_path == nil or o.base_path == '' then
-        msg.error('Can\'t delete without the base_path set')
+        log_error('Can\'t delete without the base_path set', 5)
         return
     end
     local is_in_base_path = false
     local base_path_list = parse_file_list(o.base_path)
     for _, bp in ipairs(base_path_list) do
-        is_in_base_path = select(1, string.find(path, bp, 1, true)) == 1
+        is_in_base_path = select(1, string.find(absolute_path, bp, 1, true)) == 1
         if is_in_base_path then
             break
         end
@@ -115,15 +121,15 @@ local function delete_file()
         return
     end
     if o.require_confirmation and not confirmation_prompted then
-        mp.osd_message('Press again to delete\n' .. path, 10)
+        mp.osd_message('Press again to delete\n' .. absolute_path, 10)
         confirmation_prompted = true
         return
     end
     mp.commandv('playlist-next', 'force')
-    if os.remove(path) then
-        log_info('Deleted\n' .. path, 5)
+    if os.remove(absolute_path) then
+        log_info('Deleted\n' .. absolute_path, 5)
     else
-        log_error('Failed to delete\n' .. path, 5)
+        log_error('Failed to delete\n' .. absolute_path, 5)
     end
     confirmation_prompted = false
 end
