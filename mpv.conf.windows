@@ -1,0 +1,13 @@
+# included by mpv.conf
+
+autofit-larger=1920x1080
+cache-dir="~/AppData/Local/Temp"
+
+# Prefer AV1 codec and 1440p-like resolution
+ytdl-format="bestvideo*[vcodec^=av01][width>2048][width<=2560][height>1080][height<=1440]+bestaudio/bestvideo*[width>2048][width<=2560][height>1080][height<=1440]+bestaudio/bestvideo*[vcodec^=av01]+bestaudio/bestvideo*+bestaudio/best"
+
+script-opts-add=ytdl_hook-ytdl_path="C:\Users\nurupo\AppData\Local\_programs\yt-dlp\yt-dlp.exe"
+
+script-opts-add=event_on_start_file_ytdl_download_and_replace-config_live="%AppData%\mpv\ytdl-config-live.txt"
+script-opts-add=event_on_start_file_ytdl_download_and_replace-config_vod="%AppData%\mpv\ytdl-config-vod.txt"
+script-opts-add=event_on_end_file_delete-base_path="C:\Users\nurupo\Videos\mpv\ytdl\"
