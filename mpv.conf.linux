@@ -1,0 +1,9 @@
+# included by mpv.conf
+
+autofit-larger=1280x720
+cache-dir=/tmp
+
+# ytdl_hook.lua in mpv 32.0 errors when used with ytdlp, so use my fixed version of it. (fixed in 34.0 upstream)
+ytdl=no
+# Prefer h264, <=1080p, <=30fps
+ytdl-format="bestvideo[height<=?1080][fps>=?20][ext=?mp4][vcodec^=?avc1]+bestaudio/bestvideo[height<=?1080][fps>=?20][ext=?mp4][vcodec^=?h264]+bestaudio/bestvideo[height<=?1080][fps>=?20][ext=?mp4][vcodec!^=av01][vcodec!^=vp09][vcodec!^=vp9][vcodec!^=vp9.2]+bestaudio/bestvideo[height<=?1080][fps>=?20][vcodec^=avc1]+bestaudio/bestvideo[height<=?1080][fps>=?20][vcodec^=h264]+bestaudio/bestvideo[height<=?1080][fps>=?20][vcodec!^=av01][vcodec!^=vp09][vcodec!^=vp9][vcodec!^=vp9.2]+bestaudio/bestvideo[height<=?1080][fps>=?20][ext=mp4]+bestaudio/bestvideo[height<=?1080][fps<=?30]+bestaudio/bestvideo[height<=?1080]+bestaudio/bestvideo[fps<=?30]+bestaudio/best"
