@@ -119,14 +119,9 @@ local function load_downloaded_video(downloaded_video_path, is_live, download_st
     end
 end
 
-local function file_exists(name)
-   local f = io.open(name, "r")
-   if f then
-       f:close()
-       return true
-   else
-       return false
-   end
+local function file_exists(path)
+    local info = utils.file_info(path)
+    return info and info.is_file or false
 end
 
 local function download_video_async(url, is_live, callback)
