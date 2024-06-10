@@ -28,21 +28,18 @@
 -- Hardcoded to recognize http(s) and file://. Anything that is not http(s) or
 -- file:// is treated as a local file path.
 
+local utils = require 'mp.utils'
+
 package.path = debug.getinfo(1).source:match("@?(.*/)") .. '?.lua;' .. package.path
-local cp = require('lib-copy-paste')
+local cp = require 'lib-copy-paste'
 
 local function copy_path()
     cp.copy(mp.get_property('path'), true)
 end
 
-local function file_exists(name)
-   local f = io.open(name, "r")
-   if f then
-       f:close()
-       return true
-   else
-       return false
-   end
+local function file_exists(path)
+    local info = utils.file_info(path)
+    return info and info.is_file or false
 end
 
 local function paste_path()
